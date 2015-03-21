@@ -6,12 +6,13 @@ import qualified Text.Blaze.Html4.Strict as H
 import Control.Monad.IO.Class (liftIO)
 import System.IO.Error (catchIOError, ioeGetErrorString)
 import System.Environment (getArgs)
+import System.Directory (doesFileExist)
 import Data.List (isSuffixOf)
 
 main :: IO ()
 main = do
     path <- getBasePath
-    simpleHTTP nullConf $ uriRest $ serveMarkdown path
+    simpleHTTP nullConf $ uriRest $ serve path
 
 -- | Retrieve the specified path from args
 getBasePath :: IO String
@@ -27,15 +28,24 @@ getBasePath = do
             return ""
 
 -- | The main ServerPart
-serveMarkdown :: FilePath -> String -> ServerPartT IO H.Html
-serveMarkdown basepath name = do
+serve :: FilePath -> String -> ServerPartT IO Response
+serve basepath name = do
     let stripped = case name of
             "/" -> "index"   -- Use index.markdown as default page
             _   -> tail name -- Removes the leading '/'
-    parsed <- liftIO $ readFromFile $ stripped ++ ".markdown"
+    -- Markdown files get preference when serving
+    exists <- liftIO $ doesFileExist $ stripped ++ ".markdown"
+    if exists
+    then serveMarkdown basepath stripped
+    else serveDirectory DisableBrowsing [name] basepath
+
+-- | The ServerPart responsible for serving parsed markdowns
+serveMarkdown :: FilePath -> FilePath -> ServerPartT IO Response
+serveMarkdown basepath name = do
+    parsed <- liftIO $ readFromFile $ name ++ ".markdown"
     case parsed of
-        Right html -> ok $ webPage name html
-        Left err -> ok $ H.toHtml err
+        Right html -> ok $ toResponse $ webPage name html
+        Left err -> ok $ toResponse err
 
 -- | The basic blaze-html tempalte for a website
 webPage :: String -> H.Html -> H.Html
