@@ -22,15 +22,15 @@ serve basepath name = do
             "/" -> index config   -- Use the configured index
             _   -> tail name      -- Removes the leading '/'
     -- Markdown files get preference when serving
-    exists <- liftIO $ doesFileExist $ stripped ++ ".markdown"
+    exists <- liftIO $ doesFileExist $ basepath ++ stripped ++ ".markdown"
     if exists
     then serveMarkdown basepath stripped
-    else serveDirectory DisableBrowsing [name] basepath
+    else serveDirectory DisableBrowsing [stripped] basepath
 
 -- | The ServerPart responsible for serving parsed markdowns
 serveMarkdown :: FilePath -> FilePath -> ReaderT Configuration (ServerPartT IO) Response
 serveMarkdown basepath name = do
-    converted <- liftIO $ convertFile $ name ++ ".markdown"
+    converted <- liftIO $ convertFile $ basepath ++ name ++ ".markdown"
     config <- ask
     ok $ toResponse $ webPage name (style config) converted
 
