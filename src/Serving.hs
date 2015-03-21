@@ -30,12 +30,9 @@ serve basepath name = do
 -- | The ServerPart responsible for serving parsed markdowns
 serveMarkdown :: FilePath -> FilePath -> ReaderT Configuration (ServerPartT IO) Response
 serveMarkdown basepath name = do
-    parsed <- liftIO $ readFromFile $ name ++ ".markdown"
-    case parsed of
-        Right html -> do
-            config <- ask
-            ok $ toResponse $ webPage name (style config) html
-        Left err -> ok $ toResponse err
+    converted <- liftIO $ convertFile $ name ++ ".markdown"
+    config <- ask
+    ok $ toResponse $ webPage name (style config) converted
 
 -- | The basic blaze-html tempalte for a website
 webPage :: String -> Maybe String -> H.Html -> H.Html
@@ -52,9 +49,7 @@ webPage title style content =
             content
 
 -- | Read from a markdown file and convert its contents to html
-readFromFile :: FilePath -> IO (Either String H.Html)
-readFromFile fp = (do
-        content <- readFile fp
-        return . Right $ writeHtml def $ readMarkdown def content
-    ) `catchIOError`
-        (\e -> return $ Left $ "IOError: " ++ ioeGetErrorString e)
+convertFile :: FilePath -> IO H.Html
+convertFile fp = do
+    content <- readFile fp
+    return $ writeHtml def $ readMarkdown def content
