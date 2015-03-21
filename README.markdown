@@ -2,16 +2,15 @@
 
 A minimalist wiki written in haskell.
 
-## What it does
+### What it does
 simple-wiki is designed to mirror the functionality of github's wiki.
 
-When it is started, it serves `markdown` files from the directory
-it was started in and its subdirectories.
+It serves `markdown` files, converted into `html`.
 
 The file `README.markdown` would therefore correspond to
 `localhost:8000/README`.
 
-## Installation
+### Installation
 This package installs like any other haskell package:
 ```bash
 $ runhaskell Setup.hs configure
@@ -19,7 +18,13 @@ $ runhaskell Setup.hs build
 $ runhaskell Setup.hs install
 ```
 
-## Dependencies
+### Usage
+To start it, simply run:
+```
+$ simple-wiki path/to/wiki/root
+```
+
+### Dependencies
 simple-wiki uses:
 - [happstack] for its web functionality
 - [blaze-html] for the website templating

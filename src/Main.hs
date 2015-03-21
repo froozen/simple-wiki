@@ -5,13 +5,30 @@ import Happstack.Server
 import qualified Text.Blaze.Html4.Strict as H
 import Control.Monad.IO.Class (liftIO)
 import System.IO.Error (catchIOError, ioeGetErrorString)
+import System.Environment (getArgs)
+import Data.List (isSuffixOf)
 
 main :: IO ()
-main = simpleHTTP nullConf $ uriRest serveMarkdown
+main = do
+    path <- getBasePath
+    simpleHTTP nullConf $ uriRest $ serveMarkdown path
+
+-- | Retrieve the specified path from args
+getBasePath :: IO String
+getBasePath = do
+    args <- getArgs
+    case args of
+        -- Make sure the path ends with a '/'
+        path:_ -> if "/" `isSuffixOf` path
+                  then return path
+                  else return $ path ++ "/"
+        _      -> do
+            putStrLn "No path specified, serving from '.'"
+            return ""
 
 -- | The main ServerPart
-serveMarkdown :: String -> ServerPartT IO H.Html
-serveMarkdown name = do
+serveMarkdown :: FilePath -> String -> ServerPartT IO H.Html
+serveMarkdown basepath name = do
     let stripped = tail name -- Removes the leading '/'
     parsed <- liftIO $ readFromFile $ stripped ++ ".markdown"
     case parsed of
