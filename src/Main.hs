@@ -29,7 +29,9 @@ getBasePath = do
 -- | The main ServerPart
 serveMarkdown :: FilePath -> String -> ServerPartT IO H.Html
 serveMarkdown basepath name = do
-    let stripped = tail name -- Removes the leading '/'
+    let stripped = case name of
+            "/" -> "index"   -- Use index.markdown as default page
+            _   -> tail name -- Removes the leading '/'
     parsed <- liftIO $ readFromFile $ stripped ++ ".markdown"
     case parsed of
         Right html -> ok $ webPage name html
