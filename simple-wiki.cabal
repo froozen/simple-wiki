@@ -1,0 +1,17 @@
+name:                simple-wiki
+version:             0.1.0.0
+synopsis:            A simple wiki implementation, mirroring that of github.
+homepage:            https://github.com/froozen/simple-wiki
+license:             BSD3
+license-file:        LICENSE
+author:              fro_ozen
+maintainer:          fro_ozen@gmx.de
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable simple-wiki
+  main-is:             Main.hs
+  build-depends:       base >=4.7 && <4.8, pandoc >=1.13 && <1.14, happstack-server >=7.3 && <7.4, blaze-html >=0.7 && <0.8, transformers >=0.4 && <0.5
+  hs-source-dirs:      src
+  default-language:    Haskell2010
