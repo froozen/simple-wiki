@@ -24,6 +24,15 @@ To start it, simply run:
 $ simple-wiki path/to/wiki/root
 ```
 
+### Configuration
+To configure simple-wiki, create a file named `simple-wiki.json` in the root
+of your wiki directory.
+
+You can configure the following:
+- `"style"`: The path to a CSS stylesheet within the directory (default: no stylesheet)
+- `"port"`: The port the wiki is served on (default: `8000`)
+- `"index"`: The name of the index markdown file of your wiki (default: `"index"`)
+
 ### Dependencies
 simple-wiki uses:
 - [happstack] for its web functionality
