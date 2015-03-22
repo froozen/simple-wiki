@@ -45,8 +45,7 @@ webPage title style content =
                                    ! A.href (H.toValue css)
                 -- An empty link, as there seems to be no empty Html value
                 _ -> H.link
-        H.body $ do
-            content
+        H.body content
 
 -- | Read from a markdown file and convert its contents to html
 convertFile :: FilePath -> IO H.Html

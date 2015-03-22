@@ -47,5 +47,5 @@ loadConfiguration path = do
         case decode configFile of
             Just config -> return config
             _           -> do
-                putStrLn $ "Couldn't parse configuration file"
+                putStrLn "Couldn't parse configuration file"
                 exitFailure
